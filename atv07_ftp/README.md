@@ -49,7 +49,7 @@ ssh root@<IP_DA_VM>
 
 ## 1. Instalação do VSFTPD
 
-Primei
+Primeiramente, vamos instalar o servidor FTP:
 
 ~~~bash
 apt install -y vsftpd
@@ -63,7 +63,7 @@ apt install -y vsftpd
 nano /etc/vsftpd.conf
 ~~~
 
-Alterar:
+Acrescente as seguintes informações no arquivo:
 
 ~~~
 anonymous_enable=NO
@@ -72,13 +72,9 @@ chroot_local_user=YES
 pasv_enable=YES
 ~~~
 
-Salvar:
+Salve as alterações.
 
-~~~
-Ctrl + X → Y → Enter
-~~~
-
-Reiniciar:
+Depois, reinicie o servidor FTP:
 
 ~~~bash
 systemctl restart vsftpd
