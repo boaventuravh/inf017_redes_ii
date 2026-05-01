@@ -19,13 +19,7 @@ Anstes de iniciar a máquina virtual, realize as seguintes configurações de re
 
 1. Vá em Configurações
 2. Aba Rede
-3. Configure como:
-
-```
-Adaptador em modo Bridge (Bridge Adapter)
-```
-
-Se desejar acessar a VM via conexão ssh, siga os dois passos a seguir.
+3. Configure o Adaptador 1 em modo Bridge (Bridge Adapter).
 
 ---
 
@@ -56,7 +50,7 @@ Primeiramente, vamos instalar o servidor FTP:
 apt install -y vsftpd
 ```
 
-## Feito isso, podemos seguir para a configuração do vsftpd.
+Feito isso, podemos seguir para a configuração do vsftpd.
 
 ## 2. Configuração do VSFTPD
 
@@ -135,6 +129,12 @@ Por segurança, remover a permissão de escrita da pasta `/home/ftpuser` para to
 chmod a-w /home/ftpuser
 ```
 
+Checar as permissões:
+
+```bash
+ls -l /home
+```
+
 O retorno esperado é algo assim:
 
 ```
@@ -143,19 +143,13 @@ dr-xr-xr-x 3 ftpuser ftpusers  4096 May  1 15:49 ftpuser
 drwx------ 2 root    root     16384 Jul 11  2023 lost+found
 ```
 
-Checar as permissões:
-
-```bash
-ls -l /home
-```
-
 Para testar, crie um arquivo `.txt` na pasta reservada, digite algum texto nele e salve:
 
 ```bash
 nano /home/ftpuser/public/teste.txt
 ```
 
-Ok, a configuração do servidor FTP está pronta, e o arquivo de teste está criado. A partir de agora trabalharemos na máquina host. Lembre-se que o IP da VM será necessário. Você pode obte-lo com `ip a` ou `ifconfig -a` (se o net-tools estiver instalado).
+Ok, a configuração do servidor FTP está pronta e o arquivo de teste está criado. A partir de agora trabalharemos na máquina host. Lembre-se que o IP da VM será necessário. Você pode obte-lo com `ip a` ou `ifconfig -a` (se o net-tools estiver instalado).
 
 ---
 
@@ -176,7 +170,7 @@ Observe os campos na parte superior da imagem. Preencha-os assim:
 
 Então clique em `Quickconnect`(ou `Conexão rápida`). O resultado esperado é algo como:
 
-``` no-copy
+```
 Status:	Connecting to <ip_vm>:21...
 Status:	Connection established, waiting for welcome message...
 Status:	Insecure server, it does not support FTP over TLS.
@@ -187,7 +181,7 @@ Status:	Directory listing of "/" successful
 
 Quando a conexão for estabelecida, será possível visualizar a pasta criada na máquina virtual, conforme a imagem abaixo.
 
-![](filezilla_acesso.png)
+![Acesso a arquivos no filezilla](filezilla_acesso.png)
 
 Verifique o arquivo `/public/teste.txt`. Experimente baixar e abrir este arquivo e veja o texto que você salvou nele.
 
