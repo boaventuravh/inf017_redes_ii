@@ -5,7 +5,7 @@ author: "Vitor Hugo Boaventura da Silva"
 
 
 Adaptado do [tutorial produzido por Caian Santana
- ](https://docs.google.com/document/d/1U8igV6snO7iIgYgxqg1nC_yNpm5dVrtU2E61s3elD9k/edit?tab=t.0) para as [máquinas virtuais Debian 12](https://drive.google.com/drive/folders/1nGR5_DV5u7J-jm3upk0B82C3EsvlfjlT?usp=sharing).
+ ](https://docs.google.com/document/d/1qwJCIU-pSPB7-klefBeOGk3s-FQBea6X1xyu8QhZEyM/edit?tab=t.0#heading=h.3cod0n8abz08) para as [máquinas virtuais Debian 12](https://drive.google.com/drive/folders/1nGR5_DV5u7J-jm3upk0B82C3EsvlfjlT?usp=sharing).
 
 
 # Objetivo
