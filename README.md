@@ -1,6 +1,6 @@
 # INF017 - Redes de Computadores II
 
-	repositório destinado a armazenar os tutoriais das atividades práticas da disciplina INF017
+	repositório destinado a armazenar os tutoriais das atividades práticas da disciplina INF017 - Redes de Computadores II
 	IFBA - Campus Salvador
 ---
 
