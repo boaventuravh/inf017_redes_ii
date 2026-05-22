@@ -2,7 +2,7 @@
 
 ### Vitor Hugo Boaventura da Silva
 
-Adaptado do [tutorial de Caian Santana](https://docs.google.com/document/d/1qwdUeoJlS4PSbZm01L1_YvTRXYgEf83i7acw_hJVDeM/edit?usp=sharing)
+Adaptado do [tutorial de Caian Santana](https://docs.google.com/document/d/1qwdUeoJlS4PSbZm01L1_YvTRXYgEf83i7acw_hJVDeM/edit?usp=sharing) para as [máquinas virtuais Debian 12](https://drive.google.com/drive/folders/1nGR5_DV5u7J-jm3upk0B82C3EsvlfjlT?usp=sharing).
 
 
 ## Descrição da atividade
