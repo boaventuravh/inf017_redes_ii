@@ -1,7 +1,11 @@
 # INF017 - Redes de Computadores II
 
-	repositório destinado a armazenar os tutoriais das atividades práticas da disciplina INF017 - Redes de Computadores II
-	IFBA - Campus Salvador
+_Repositório destinado a armazenar os tutoriais das atividades práticas da disciplina INF017 - Redes de Computadores II_
+
+_Análise e Desenvolvimento de Sistemas_
+
+_IFBA - Campus Salvador_
+
 ---
 
 [Atividade 07 - FTP](https://github.com/boaventuravh/inf017_redes_ii/tree/main/atv07_ftp)
