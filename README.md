@@ -7,3 +7,5 @@
 [Atividade 07 - FTP](https://github.com/boaventuravh/inf017_redes_ii/tree/main/atv07_ftp)
 
 [Atividade 08 - SMTP](https://github.com/boaventuravh/inf017_redes_ii/tree/main/atv08_smtp)
+
+[Atividade 09 - SSH](https://github.com/boaventuravh/inf017_redes_ii/tree/main/atv09_ssh)
