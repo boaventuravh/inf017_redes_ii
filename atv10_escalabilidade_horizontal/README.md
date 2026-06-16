@@ -79,7 +79,7 @@ Crie este arquivo (sem extensão) dentro das 3 pastas. Ele é a receita do conta
 
 ```bash
 for dir in users-service products-service orders-service; do
-  cat > "$dir/Dokerfile" <<EOF
+  cat > "$dir/Dockerfile" <<EOF
     FROM node:18-slim
     WORKDIR /app
     COPY package*.json ./
