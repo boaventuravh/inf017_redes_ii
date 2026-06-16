@@ -13,3 +13,5 @@ _IFBA - Campus Salvador_
 [Atividade 08 - SMTP](https://github.com/boaventuravh/inf017_redes_ii/tree/main/atv08_smtp)
 
 [Atividade 09 - SSH](https://github.com/boaventuravh/inf017_redes_ii/tree/main/atv09_ssh)
+
+[Atividade 12 - Zabbix](https://github.com/boaventuravh/inf017_redes_ii/tree/main/atv12_zabbix)
