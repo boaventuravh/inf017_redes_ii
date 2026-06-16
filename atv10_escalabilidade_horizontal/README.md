@@ -76,14 +76,19 @@ done
 
 Crie este arquivo (sem extensão) dentro das 3 pastas. Ele é a receita do container:
 
-```Dockerfile
-FROM node:18-slim
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-EXPOSE 3000
-CMD ["node", "index.js"]
+
+```bash
+for dir in users-service products-service orders-service; do
+  cat > "$dir/Dokerfile" <<EOF
+    FROM node:18-slim
+    WORKDIR /app
+    COPY package*.json ./
+    RUN npm install
+    COPY . .
+    EXPOSE 3000
+    CMD ["node", "index.js"]
+EOF
+done
 ```
 
 ### Arquivo C: index.js (O Coração)
@@ -92,72 +97,82 @@ Aqui vamos diferenciar um pouco cada serviço.
 
 #### Em `users-service/index.js` e `products-service/index.js` (Consumidores):
 
-```js
-const express = require('express');
-const amqp = require('amqplib');
-const client = require('prom-client');
-const axios = require('axios');
-const app = express();
+```bash
+for dir in users-service products-service; do
+  cat > "$dir/index.js" <<EOF
+    const express = require('express');
+    const amqp = require('amqplib');
+    const client = require('prom-client');
+    const axios = require('axios');
+    const app = express();
 
-const SERVICE_NAME = process.env.SERVICE_NAME || 'users-service';
-const SERVICE_ID = SERVICE_NAME + '-1';
-const CONSUL_HOST = process.env.CONSUL_HOST || 'consul';
-const CONSUL_PORT = process.env.CONSUL_PORT || 8500;
-const SERVICE_PORT = 3000;
+    const SERVICE_NAME = process.env.SERVICE_NAME || 'users-service';
+    const SERVICE_ID = SERVICE_NAME + '-1';
+    const CONSUL_HOST = process.env.CONSUL_HOST || 'consul';
+    const CONSUL_PORT = process.env.CONSUL_PORT || 8500;
+    const SERVICE_PORT = 3000;
 
-// Prometheus metrics
-client.collectDefaultMetrics();
-app.get('/metrics', async (req, res) => {
-  res.set('Content-Type', client.register.contentType);
-  res.end(await client.register.metrics());
-});
+    // Prometheus metrics
+    client.collectDefaultMetrics();
+    app.get('/metrics', async (req, res) => {
+      res.set('Content-Type', client.register.contentType);
+      res.end(await client.register.metrics());
+    });
 
-// Consul registration
-async function registerConsul() {
-  try {
-    await axios.put(`http://${CONSUL_HOST}:${CONSUL_PORT}/v1/agent/service/register`, {
-      Name: SERVICE_NAME,
-      ID: SERVICE_ID,
-      Address: SERVICE_NAME,
-      Port: SERVICE_PORT,
-      Check: {
-        HTTP: `http://${SERVICE_NAME}:${SERVICE_PORT}/metrics`,
-        Interval: '10s'
+    // Consul registration
+    async function registerConsul() {
+      try {
+        await axios.put(`http://${CONSUL_HOST}:${CONSUL_PORT}/v1/agent/service/register`, {
+          Name: SERVICE_NAME,
+          ID: SERVICE_ID,
+          Address: SERVICE_NAME,
+          Port: SERVICE_PORT,
+          Check: {
+            HTTP: `http://${SERVICE_NAME}:${SERVICE_PORT}/metrics`,
+            Interval: '10s'
+          }
+        });
+        console.log(`[CONSUL] Serviço registrado: ${SERVICE_NAME}`);
+      } catch (err) {
+        console.log('[CONSUL] Falha ao registrar, tentando novamente em 5s...');
+        setTimeout(registerConsul, 5000);
       }
+    }
+
+    // RabbitMQ consumer
+    async function initRabbit() {
+      try {
+        const conn = await amqp.connect('amqp://rabbitmq');
+        const ch = await conn.createChannel();
+        await ch.assertQueue('order_created');
+        ch.consume('order_created', (msg) => {
+          console.log(' [!] Evento recebido no serviço:', msg.content.toString());
+          ch.ack(msg);
+        });
+      } catch (e) {
+        console.log('Aguardando RabbitMQ...');
+        setTimeout(initRabbit, 5000);
+      }
+    }
+
+    app.get('/', (req, res) => res.send('Serviço Ativo'));
+
+    app.listen(SERVICE_PORT, () => {
+      console.log(`Rodando na porta ${SERVICE_PORT}`);
+      initRabbit();
+      registerConsul();
     });
-    console.log(`[CONSUL] Serviço registrado: ${SERVICE_NAME}`);
-  } catch (err) {
-    console.log('[CONSUL] Falha ao registrar, tentando novamente em 5s...');
-    setTimeout(registerConsul, 5000);
-  }
-}
-
-// RabbitMQ consumer
-async function initRabbit() {
-  try {
-    const conn = await amqp.connect('amqp://rabbitmq');
-    const ch = await conn.createChannel();
-    await ch.assertQueue('order_created');
-    ch.consume('order_created', (msg) => {
-      console.log(' [!] Evento recebido no serviço:', msg.content.toString());
-      ch.ack(msg);
-    });
-  } catch (e) {
-    console.log('Aguardando RabbitMQ...');
-    setTimeout(initRabbit, 5000);
-  }
-}
-
-app.get('/', (req, res) => res.send('Serviço Ativo'));
-
-app.listen(SERVICE_PORT, () => {
-  console.log(`Rodando na porta ${SERVICE_PORT}`);
-  initRabbit();
-  registerConsul();
-});
+EOF
+done
 ```
 
+
 #### Em `orders-service/index.js` (Produtor):
+
+```bash
+nano orders-service/index.js
+```
+e cole:
 
 ```js
 const express = require('express');
@@ -221,6 +236,14 @@ app.listen(SERVICE_PORT, () => {
 
 Crie este arquivo na raiz da pasta `lab-escalabilidade`. Ele vai subir toda a infraestrutura de uma vez.
 
+Execute o comando:
+
+```bash
+nano docker-compose.yml
+```
+
+e cole:
+
 ```yaml
 version: '3.9'
 services:
@@ -279,7 +302,13 @@ services:
 
 ## 5. Configuração do Monitoramento
 
-Crie o arquivo `prometheus.yml` na raiz:
+Crie o arquivo `prometheus.yml` na raiz. Utilize o comando
+
+```bash
+nano prometheus.yml
+```
+
+e cole: 
 
 ```yaml
 global:
@@ -292,7 +321,7 @@ scrape_configs:
 
 ## 6. Executando e Testando
 
-- Subir tudo:
+- Utilize o seguinte comando para executar toda a aplicação:
 
 ```powershell
 docker compose up --build
@@ -325,7 +354,7 @@ docker compose up --build
 
 Para simular uma falha e testar a tolerância a falhas:
 
-1. Derrube um serviço consumidor:
+1. Interrompa um serviço consumidor:
 
 ```powershell
 docker stop lab-escalabilidade-users-service-1
@@ -335,16 +364,21 @@ docker stop lab-escalabilidade-users-service-1
 
 - Acesse novamente http://localhost:3003/create-order.
 
+O resultado esperado é que a requisição seja recebida pelo outro micro-service (_products-service_).
+
+Agora, interrompa o outro serviço com `docker stop lab-escalabilidade-products-service-1`
+
 3. Observe:
 
 - No RabbitMQ, a fila `order_created` terá uma mensagem “Ready” (aguardando consumidor).
 - No Prometheus, o serviço parado ficará como “DOWN” em “Targets”.
 - No Consul, o serviço parado ficará como “critical” ou sumirá da lista.
 
-4. Suba o serviço novamente:
+4. Suba os serviços consumidores novamente:
 
 ```powershell
 docker start lab-escalabilidade-users-service-1
+docker start lab-escalabilidade-products-service-1
 ```
 
 5. Resultado esperado:
