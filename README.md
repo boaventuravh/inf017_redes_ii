@@ -14,4 +14,7 @@ _IFBA - Campus Salvador_
 
 [Atividade 09 - SSH](https://github.com/boaventuravh/inf017_redes_ii/tree/main/atv09_ssh)
 
+[Atividade 10 - Escalabilidade Horizontal](https://github.com/boaventuravh/inf017_redes_ii/tree/main/atv10_escalabilidade_horizontal)
+
 [Atividade 12 - Zabbix](https://github.com/boaventuravh/inf017_redes_ii/tree/main/atv12_zabbix)
+
