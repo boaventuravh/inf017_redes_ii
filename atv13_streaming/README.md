@@ -56,33 +56,32 @@ durante a transmissão do vídeo.
 # Tutorial da Atividade
 
 
-## 2. Configuração prévia da VM
+## 1. Configuração prévia da VM
 
 Para esta atividade, utilizaremos apenas uma placa de rede, que deverá ser configurada em _Modo Bridge_
 
-## 3. Logando na VM
+## 2. Logando na VM
 
 _login: osboxes_
 
 _senha: osboxes.org_
 
-Para acessar esta máquina via SSH, será necessário fazer uma breve configuração antes para autorizar o acesso. Na VM:
+Essa máquina não permite login no modo root. Então use o comando `sudo -i` (senha: osboxes.org) para evitar a necessidade de adicionar _sudo_ e digitar senha em todos os comandos.
+
+Para acessá-la via SSH, será necessário fazer uma breve configuração antes para autorizar o acesso. Na VM:
 
 ```bash
 apt update
 apt install ssh
 ufw allow 22
 ```
-Depois, confira o IP da VM com `ip a`. Na máquina host:
+Depois, confira o IP com `ip a`. Na máquina host:
 
 ```bash
-ssh osboxes@192.168.0.15 
+ssh osboxes@<ip_da_vm> 
 ```
-Essa máquina não permite login no modo root. Então use o comando `sudo -i` (senha: osboxes.org) para evitar a necessidade de adicionar _sudo_ e digitar senha em todos os comandos.
 
-## 4. Pré-requisitos
-
-4.2. Atualize a lista de pacotes e instale o Nginx, ffmpeg e suas
+2.2. Atualize a lista de pacotes e instale o Nginx, ffmpeg e suas
 dependências:
 
 ```bash
@@ -90,13 +89,17 @@ sudo apt-get update
 sudo apt install nginx libnginx-mod-rtmp ffmpeg
 ```
 
-4.3. Verifique a instalação:
+2.3. Verifique a instalação:
 
 ```bash
 sudo systemctl status nginx
+```
+
+```bash
 ls /usr/lib/nginx/modules/ | grep rtmp
 ```
-4.4. Configure o nginx:
+
+2.4. Configure o nginx:
 
 ```bash
 sudo nano /etc/nginx/nginx.conf
@@ -120,93 +123,61 @@ rtmp {
 }
 ```
 
-4.5. Reinicie o nginx:
+2.4. Reinicie o nginx:
 
 ```bash
 sudo systemctl restart nginx
 ```
+## 3 Salvando um vídeo na VM
 
-Instação do python:
+Para criar um servidor streaming, precisaremos de arquivo de vídeo salvo na VM. Para isso:
 
-```bash
-sudo apt-get install -y build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev wget libbz2-dev
-```
+* Baixe um vídeo qualquer da internet na sua máquina host. 
+* Siga o passo a passo do tutorial da [atividade de FTP](https://github.com/boaventuravh/inf017_redes_ii/tree/main/atv07_ftp) para transferir arquivos da máquina host para a VM. Porém, não execute o comando `chmod a-w /home/ftpuser`, pois ele remove a permissão de escrita.
+* Estabeleça a conexão FTP no Filezilla.
+* Arraste o vídeo salvo na máquina host para a pasta criada para o usuário `ftpuser`.
 
-Baixar versão específica 
-```bash
-wget https://www.python.org/ftp/python/3.10.0/Python-3.10.0.tgz
-```
+Para verificar se o vídeo foi salvo na VM, entre na pasta ftpuser e use o comando `ls`.
 
-Descompactar
+## 4. Transmitindo e consumindo o vídeo:
 
-```bash
-tar -xf Python-3.10.0.tgz
-```
-acesse a pasta
+
+4.1. Transmita o vídeo com ffmpeg:
 
 ```bash
-cd Python-3.10.0
-```
-
-Rode o comando `configure` para habilitar otimizações:
-```bash
-./configure --enable-optimizations
-```
-
-Utilize o comando make:
-
-```bash
-make -j $(nproc)
-```
-
-Para manter a instalação pré-instalada do Python no Ubuntu:
-
-```bash
-make altinstall
-```
-
-Agora retorne ao diretório anterior e cheque se a versão instalada é a desejada:
-
-```bash
-cd ..
-python3.10 --version
-```
-
-O retorno esperado é `Python 3.10.0`.
-
-Agora, instale o downloader de vídeos `yt-dlp` com o comando a seguir para garantir que a versão seja compatível com o python:
-
-```bash
-python3.10 -m pip install -U yt-dlp
-
-```
-4.6. Baixe o video(pode ser qualquer um, link meramente de exemplo):
-
-```bash
-yt-dlp https://www.dailymotion.com/video/x9e4gdi
-```
-
-## 5. Streamando e consumindo o video:
-
-```
-5.1. Streame o video com ffmpeg:
 ffmpeg -re -i "nome_do_video.mp4" -c:v copy -c:a aac -ar
 44100 -ac 1 -f flv rtmp://localhost/live/stream
-5.2. Na máquina host, instale o ffmpeg:
+```
+
+4.2. Na máquina host, instale o ffmpeg:
+
+
+```powershell
 winget install "FFmpeg (Essentials Build)"
-5.3. Abra a stream usando ffplay:
+```
+
+4.3. Abra a stream usando ffplay:
+
+```
 ffplay rtmp://<ip_da_vm>/live/stream
 ```
 
-## 6. Utilizando Wireshark:
+Alternativamente, é possível utilizar o reprodutor de mídia VLC, clicar na opção _Mídia_, depois _abrir transmissão de rede_ e colar o link _rtmp://<ip_da_vm>/live/stream_.
 
-```
-6.1. Na máquina host, instale o Wireshark. Caso não possa instalar, utilize
+## 5. Utilizando Wireshark:
+
+
+5.1. Na máquina host, instale o Wireshark. Caso não possa instalar, utilize
 a versão portátil. Se estiver no linux, instale a seguinte maneira:
+
+```bash
 sudo apt install wireshark
-6.2. Após instalado, abra o wireshark como adm:
-sudo wireshark
-6.3. Ao abrir, escreva na barra de filtro “port 1935” e aperte em iniciar no
-canto superior esquerdo(simbolo de barbatana azul), ele começará a
-capturar os pacotes da stream:
 ```
+
+5.2. Após instalado, abra o wireshark como adm:
+
+```bash
+sudo wireshark
+```
+5.3. Ao abrir, escreva na barra de filtro “port 1935” e aperte em iniciar no canto superior esquerdo(simbolo de barbatana azul), ele começará a capturar os pacotes da stream.
+
