@@ -18,3 +18,4 @@ _IFBA - Campus Salvador_
 
 [Atividade 12 - Zabbix](https://github.com/boaventuravh/inf017_redes_ii/tree/main/atv12_zabbix)
 
+[Atividade 13 - Serviços de Streaming, QoS e QoE](https://github.com/boaventuravh/inf017_redes_ii/tree/main/atv13_streaming)
